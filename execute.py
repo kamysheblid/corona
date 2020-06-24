@@ -15,7 +15,11 @@ d = corona.Data()
 d.__init__()
 today = d.deaths.columns[-1].strftime('%m_%d')
 plt.rc('figure', figsize=[10, 8])
+
+import os
 datadir='data'
+if not os.path.isdir(datadir):
+    os.makedir(datadir)
 
 def print_europe_info():
     d.plot_prediction_deaths_countries(european_countries,
