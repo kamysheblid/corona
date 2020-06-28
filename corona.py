@@ -657,7 +657,7 @@ If no print then return confirmed,deaths"""
             plt.show()
         return ax
 
-    def plot_deaths_per100k_countries(
+    def plot_deaths_per_100k_countries(
         self, regions: iter, logy: bool = True, plot: bool = True
     ):
         data = self.deaths_per_100k.loc[regions].sort_values(
