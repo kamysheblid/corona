@@ -106,6 +106,8 @@ class Data:
             .sort_values(a.columns[-1], ascending=False)
         )
 
+        self.newest_day = self.deaths.columns[-1]
+
         return None
 
     def _plot_major_deaths_daily(self):
@@ -771,7 +773,7 @@ If no print then return confirmed,deaths"""
 
     def plot_deaths_per_100k_threshold(self,
                                        countries=important_regions,
-                                       logy=True, threshold=0.1,
+                                       logy=True, threshold=0.01,
                                        plot=True):
         data = (d.deaths_per_100k.loc[countries].sort_values(d.deaths.columns[-1],ascending=False))
         new_data = pd.DataFrame()
@@ -785,7 +787,7 @@ If no print then return confirmed,deaths"""
             new_data = new_data.append(series)
 
         ax = new_data.T.plot(logy=logy)
-        ax.set_xlabel(f'Days since {threshold} deaths')
+        ax.set_xlabel(f'Days since {threshold} deaths per 100k population')
         ax.set_ylabel('Deaths per 100k population')
         fig = ax.get_figure()
         if plot:
