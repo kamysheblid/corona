@@ -42,7 +42,7 @@ def init_conditions():
     plt.close('all')
 
 def deaths_per100k():
-    d.plot_deaths_per100k_countries(corona.important_regions, plot=False)
+    d.plot_deaths_per_100k_countries(corona.important_regions, plot=False)
     plt.savefig(f'{datadir}/deaths_per100k_{today}')
     plt.close('all')
 
