@@ -73,6 +73,7 @@ class Data:
         self.deaths.columns = pd.date_range(
             start=(a := self.deaths.columns)[0], periods=a.size
         )
+        self.newest_day = self.deaths.columns[-1]
 
         self.confirmed_per100k = (
             self.confirmed.divide(self.population, axis=0)
@@ -92,7 +93,10 @@ class Data:
             .dropna(axis=1)
             .sort_values(self.deaths.columns[-2], ascending=False)
         )
-
+        self.deaths_weekly = (
+                (a:=self.deaths_daily.T.resample('W').sum().T)
+            .sort_values(a.columns[-2],ascending=False)
+        )
 
         self.growth = self._confirmed_growth_rates()
 
@@ -106,7 +110,6 @@ class Data:
             .sort_values(a.columns[-1], ascending=False)
         )
 
-        self.newest_day = self.deaths.columns[-1]
 
         return None
 
@@ -649,6 +652,20 @@ If no print then return confirmed,deaths"""
             self.deaths.diff(axis="columns")
             .loc[regions]
             .sort_values(self.deaths.columns[-1], ascending=False)
+            .T.plot(logy=logy)
+        )
+
+        #plt.grid(axis="both", which="both")
+        if plot:
+            plt.show()
+        return ax
+
+    def plot_deaths_weekly(
+            self, regions: iter = important_regions, logy: bool = True, plot: bool = True
+    ):
+        ax = (
+            self.deaths_weekly
+            .loc[[a for a in self.deaths_weekly.index if a in regions]]
             .T.plot(logy=logy)
         )
 

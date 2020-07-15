@@ -86,6 +86,17 @@ def daily_deaths():
     fig = ax.get_figure()
     fig.savefig(f'{datadir}/daily_deaths_{today}')
     plt.close('all')
+    return
+
+def weekly_deaths():
+    ax = d.deaths_weekly.T.plot(logy=False)
+    plt.title('Weekly Deaths')
+    plt.ylabel('Deaths')
+    plt.xlabel('Date')
+    fig = ax.get_figure()
+    fig.savefig(f'{datadir}/weekly_deaths_{today}')
+    plt.close('all')
+    return
 
 if __name__ == '__main__':
     print_europe_info()
