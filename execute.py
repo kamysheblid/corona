@@ -79,7 +79,7 @@ def print_canada():
 
 def daily_deaths(avg_days=6):
     regions = ['US','Iran','Germany','Italy','Spain','United Kingdom','Brazil','India']
-    ax = (d.deaths.loc[regions].diff(axis=1).sort_values((a:=d.deaths.columns)[-1],ascending=False).get(a[1:]).rolling(avg_days,win_type='trian',axis=1).sum()/(avg_days/2)).T.plot(logy=True,ylim=(1,None))
+    ax = (d.deaths.loc[regions].diff(axis=1).sort_values((a:=d.deaths.columns)[-1],ascending=False).get(a[1:]).rolling(avg_days,win_type='triang',axis=1).sum()/(avg_days/2)).T.plot(logy=True,ylim=(1,None))
     plt.title('Daily Deaths')
     plt.ylabel('Deaths')
     plt.xlabel('Date')
