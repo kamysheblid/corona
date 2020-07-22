@@ -77,9 +77,9 @@ def print_canada():
     plt.savefig(f'{datadir}/canada_deaths_{today}')
     plt.close('all')
 
-def daily_deaths():
+def daily_deaths(avg_days=6):
     regions = ['US','Iran','Germany','Italy','Spain','United Kingdom','Brazil','India']
-    ax = d.deaths.loc[regions].diff(axis=1).sort_values((a:=d.deaths.columns)[-1],ascending=False).get(a[-70:]).rolling(3,win_type='gaussian',axis=1).sum(std=0.5).T.plot(logy=True)
+    ax = (d.deaths.loc[regions].diff(axis=1).sort_values((a:=d.deaths.columns)[-1],ascending=False).get(a[1:]).rolling(avg_days,win_type='trian',axis=1).sum()/(avg_days/2)).T.plot(logy=True,ylim=(1,None))
     plt.title('Daily Deaths')
     plt.ylabel('Deaths')
     plt.xlabel('Date')
@@ -103,7 +103,6 @@ if __name__ == '__main__':
     print_important_regions()
     init_conditions()
     deaths_per100k()
-    #canada.plot_deaths(thresh=1,plot=False).savefig(f'{datadir}/canada_{today}')
     canada_percapita_plot()
     daily_deaths()
     None
