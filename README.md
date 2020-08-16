@@ -9,7 +9,7 @@ The images will be some metrics of the coronavirus, for example it will show per
 
 Do not read too much into the recovered/confirmed numbers as those are not reliable for any country, except possibly China, South Korea, and Russia since they were the only countries that took testing seriously, but even those numbers may be off.
 
-There is a deaths_prediction and that is mostly meaningless. It simply finds out what the numbers will be if the growth rate continues unchanged, which is not accurate past a few days unless the countries government makes no policy changes to address the pandemic. It is not a prediction, it is just an extrapolation from the last week of data.
+There is a deaths_extrapolation and that is mostly meaningless. It simply finds out what the numbers will be if the growth rate continues unchanged, which is not accurate past a few days unless the countries government makes no policy changes to address the pandemic. It is not a prediction, it is just an extrapolation from the last week or so of data.
 
 ## Wishlist
 - Refactor. The code is sort of a mess. There are plenty of functions that are useless to most people.

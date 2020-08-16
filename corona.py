@@ -234,7 +234,7 @@ class Data:
         plot=True,
         xgrid=None,
         ygrid=None,
-        title="",
+        title="Deaths Extrapolation",
     ):
 
         data = self.deaths.loc[regions].sort_values(self.deaths.columns[-1], ascending=False)
@@ -250,10 +250,11 @@ class Data:
                 extrapolate=extrapolate,
                 xgrid=xgrid,
                 ygrid=ygrid,
-                title="Predictions",
+                title="Deaths Extrapolation",
             )
         plt.legend()
-        plt.ylabel("Deaths Predictions")
+        plt.ylabel("Deaths Extrapolation")
+        plt.xlabel("Date")
         plt.grid(axis="x", which=xgrid) if xgrid else None
         plt.grid(axis="y", which=ygrid) if ygrid else None
         plt.title(title)
@@ -261,7 +262,7 @@ class Data:
         for ax in fig:
             ax.set_autoscaley_on(False)
             ax.vlines(self.deaths.columns[-1],*ax.get_ylim(),color='r',linestyle='--')
-            [ax.legendlabels.remove(label) for label in ax.legendlabels if 'prediction' in label]
+            #[ax.legendlabels.remove(label) for label in ax.legendlabels if 'prediction' in label]
 
         if plot:
             plt.show()
@@ -376,6 +377,7 @@ class Data:
         plt.legend()
         plt.title("Covid Death Predictions")
         plt.ylabel("Deaths" if not logy else "log(Deaths)")
+        plt.xlabel("Date")
         #plt.grid(b=True, which="major", axis="y")
         #plt.grid(b=True, which="both", axis="x")
         plt.show()
@@ -703,7 +705,7 @@ If no print then return confirmed,deaths"""
 
     def plot_deaths_per_100k(self, plot=True):
         data = (a := self.deaths_per_100k).sort_values(a.columns[-1], ascending=False)
-        self._graph(data=data, plot=plot, ylabel="Deaths per 100k", logy=False)
+        self._graph(data=data, plot=plot, ylabel="Deaths per 100k",xlabel="Date", logy=False)
         if plot:
             plt.show()
         return None
@@ -752,10 +754,11 @@ If no print then return confirmed,deaths"""
             self._graph,
             plot=False,
             ylabel="Deaths",
+            xlabel=f"Days since {int(threshold)} deaths",
             xgrid_which='both',
             ygrid_which='both',
             logy=logy,
-            title="Effectiveness of Response since 100th death",
+            title=f"Effectiveness of Response since {int(threshold)} deaths",
         )
 
         for country in regions:
