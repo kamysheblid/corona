@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import matplotlib.pyplot as plt
 import datetime
 import corona
@@ -77,9 +79,9 @@ def print_canada():
     plt.savefig(f'{datadir}/canada_deaths_{today}')
     plt.close('all')
 
-def daily_deaths(avg_days=6):
+def daily_deaths(avg_days=14):
     regions = ['US','Iran','Germany','Italy','Spain','United Kingdom','Brazil','India']
-    ax = (d.deaths.loc[regions].diff(axis=1).sort_values((a:=d.deaths.columns)[-1],ascending=False).get(a[1:]).rolling(avg_days,win_type='triang',axis=1).sum()/(avg_days/2)).T.plot(logy=True,ylim=(1,None))
+    ax = (dat:=(d.deaths.loc[regions].diff(axis=1).sort_values((a:=d.deaths.columns)[-1],ascending=False).get(a[1:]).rolling(avg_days,win_type='triang',axis=1).sum()/((avg_days-1)/2))).sort_values(dat.columns[-1],ascending=False).T.plot(logy=False,ylim=(1,None))
     plt.title('Daily Deaths')
     plt.ylabel('Deaths')
     plt.xlabel('Date')
@@ -99,9 +101,9 @@ def weekly_deaths():
     return
 
 if __name__ == '__main__':
+    init_conditions()
     print_europe_info()
     print_important_regions()
-    init_conditions()
     deaths_per100k()
     canada_percapita_plot()
     daily_deaths()
