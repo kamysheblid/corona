@@ -43,7 +43,6 @@ class Data:
         recovered_file="recovered.csv",
     ):
         """files can be url or filename"""
-
         import os
         if not all([os.path.isfile(a) for a in [confirmed_file,deaths_file,recovered_file]]):
             download_data()
@@ -109,6 +108,10 @@ class Data:
             .mul(100, fill_value=0)
             .sort_values(a.columns[-1], ascending=False)
         )
+
+        # These countries are the top 20 worst affected countries
+        # Find the top 20 countries in terms of per capita dead, then filter that through the countries with the highest daily deaths
+        self.worst_countries = self.deaths_daily.loc[self.deaths_per_100k.index[:20]].max(1).sort_values(ascending=False).index
 
 
         return None
