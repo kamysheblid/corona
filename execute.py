@@ -15,7 +15,7 @@ european_countries = ['Germany', 'United Kingdom', 'France',
 corona.download_data()
 d = corona.Data()
 d.__init__()
-today = d.deaths.columns[-1].strftime('%m_%d')
+today = d.deaths.columns[-1].strftime('%Y_%m_%d')
 plt.rc('figure', figsize=[10, 8])
 
 import os
@@ -50,7 +50,6 @@ def deaths_per100k():
 
 def canada_plot():
     (data:=canada.canada)[data>0].dropna(axis=1,how='all').dropna(axis=0,how='all').drop('Diamond Princess').T.plot(logy=True)
-    #plt.grid(axis='both',which='both')
     plt.ylabel('Deaths')
     plt.savefig(f'{datadir}/canada_{today}')
     plt.close('all')
@@ -72,11 +71,10 @@ def canada_percapita_plot():
 
 
 def print_canada():
-    d.raw_deaths.groupby(['Country/Region','Province/State']).sum().set_axis(d.deaths.columns,axis=1).loc['Canada'].T.plot(logy=True)
-    plt.title('Canada Deaths')
+    (d.raw_deaths.groupby(['Country/Region','Province/State']).sum().set_axis(d.deaths.columns,axis=1).loc['Canada'].diff(axis=1).sort_values(d.deaths.columns[-1],ascending=False).T.rolling(7).sum()/7).plot(logy=False)
+    plt.title('Canada Daily Deaths')
     plt.ylabel('Deaths')
-    #plt.grid('both','both')
-    plt.savefig(f'{datadir}/canada_deaths_{today}')
+    plt.savefig(f'{datadir}/canada_dailydeaths_{today}')
     plt.close('all')
 
 def daily_deaths(avg_days=14):
@@ -112,4 +110,5 @@ if __name__ == '__main__':
     deaths_per100k()
     canada_percapita_plot()
     daily_deaths()
+    print_canada()
     None
