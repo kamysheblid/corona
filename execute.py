@@ -138,10 +138,7 @@ def daily_avg_by_week_deaths():
 
 if __name__ == '__main__':
     init_conditions()
-    print_europe_info()
-    print_important_regions()
     deaths_per100k()
     canada_percapita_plot()
     daily_deaths()
-    print_canada()
     None
