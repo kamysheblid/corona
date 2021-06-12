@@ -108,13 +108,13 @@ def print_canada():
     plt.savefig(f'{datadir}/canada_dailydeaths')
     plt.close('all')
 
-def daily_deaths(avg_days=14):
+def daily_deaths(avg_days=14, logarithmic=False):
     # daily deaths are found by using a triangular rolling sum over avg_days and dividing by (avg_days-1)/2.
     # The actual covid figures are very chaotic, this makes them settle to a more visually appealing curve
     # but doesnt significantly change the data (in my opinion).
     logging.info('Creating daily deaths plot...')
-    regions = ['US','Iran','Germany','Italy','Spain','United Kingdom','Brazil','India']
-    ax = (dat:=(d.deaths.loc[regions].diff(axis=1).sort_values((a:=d.deaths.columns)[-1],ascending=False).get(a[1:]).rolling(avg_days,win_type='triang',axis=1).sum()/((avg_days-1)/2))).sort_values(dat.columns[-1],ascending=False).T.plot(logy=False,ylim=(1,None))
+    regions = ['US','Iran','Germany','Italy','Spain','United Kingdom','Brazil','India', 'Vietnam']
+    ax = (dat:=(d.deaths.loc[regions].diff(axis=1).sort_values((a:=d.deaths.columns)[-1],ascending=False).get(a[1:]).rolling(avg_days,win_type='triang',axis=1).sum()/((avg_days-1)/2))).sort_values(dat.columns[-1],ascending=False).T.plot(logy=logarithmic,ylim=(1,None))
     plt.title('Daily Deaths')
     plt.ylabel('Deaths')
     plt.xlabel('Date')

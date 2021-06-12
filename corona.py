@@ -29,6 +29,7 @@ important_regions = [
     "United Kingdom",
     "Brazil",
     "Germany",
+    "Vietnam",
     "India",
 ]
 
@@ -793,6 +794,7 @@ If no print then return confirmed,deaths"""
         ax = new_data.T.plot(logy=logy)
         ax.set_xlabel(f'Days since {threshold} deaths per 100k population')
         ax.set_ylabel('Deaths per 100k population')
+        ax.set_title('Response since Deaths reached 0.01 per 100k')
         fig = ax.get_figure()
         if plot:
             fig.show()
