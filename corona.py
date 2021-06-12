@@ -771,25 +771,6 @@ If no print then return confirmed,deaths"""
                 .T
             )
             fig = graph(data=country_data)
-        #            fig = self._graph(data=country_data,
-        #                              plot=False,
-        #                              ylabel='Deaths',
-        #                              logy=logy,
-        #                              xgrid_which='major',
-        #                              ygrid_which='both',
-        #                              title='Effectiveness of Response since 100th death')
-
-        #        country_data = pd.DataFrame(index=regions,columns=np.arange(1000))
-        #        for country in regions:
-        #            country_data.loc[country] = (b:=(a:=data.loc[country])[a>threshold]).set_axis(np.arange(b.size))
-
-        #        fig = country_data.T.plot(logy=logy)
-        #        plt.ylabel('Deaths')
-        #        #plt.grid(axis='x',which='major')
-        #        #plt.grid(axis='y',which='both')
-        #        plt.title(f'Effectiveness of Response since {int(threshold)} death')
-        #        plt.xlabel(f'Days since {int(threshold)} deaths')
-        #plt.grid(axis='y',which='both')
         if plot:
             plt.show()
         return fig
