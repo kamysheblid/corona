@@ -798,7 +798,7 @@ If no print then return confirmed,deaths"""
                                        countries=important_regions,
                                        logy=True, threshold=0.01,
                                        plot=True):
-        data = (d.deaths_per_100k.loc[countries].sort_values(d.deaths.columns[-1],ascending=False))
+        data = (self.deaths_per_100k.loc[countries].sort_values(self.deaths.columns[-1],ascending=False))
         new_data = pd.DataFrame()
 
         for country in data.index:
