@@ -1,16 +1,29 @@
-import os
+import os, logging
 import pandas as pd
 import warnings
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 
+print(__name__)
+logger = logging.getLogger(__name__)
+print(logging.getLevelName(logger))
+
 warnings.simplefilter(action="ignore", category=FutureWarning)
 warnings.simplefilter(action="ignore", category=DeprecationWarning)
 
 confirmed_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
+#"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
+
 recovered_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv"
+#"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv"
+
 deaths_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv"
+
+#"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv"
+
+
+
 population_url = 'https://raw.githubusercontent.com/datasets/population/master/data/population.csv'
 
 # worldbank took down their api sometime in Jun
@@ -42,6 +55,7 @@ class Data:
         confirmed_file="confirmed.csv",
         deaths_file="deaths.csv",
         recovered_file="recovered.csv",
+        population_file="population.csv"
     ):
         """files can be url or filename"""
         import os
@@ -54,7 +68,7 @@ class Data:
             self.raw_confirmed.get("Country/Region").drop_duplicates().values
         )
 
-        self.population = self._get_population_figures()
+        self.population = self._get_population_figures(population_file)
 
         self.confirmed = self.raw_confirmed.groupby(by="Country/Region").sum()
         # fix dates
@@ -148,23 +162,24 @@ class Data:
                 ["confirmed", confirmed_url],
                 ["deaths", deaths_url],
                 ["recovered", recovered_url],
+                ["population", population_url],
             ]
         )
-        for file in ["confirmed", "deaths", "recovered"]:
-            expr_read = f'pd.read_csv({file}_url).drop(["Lat","Long"],axis="columns")'
+        for file_type in ["confirmed", "deaths", "recovered","population"]:
+            expr_read = f'pd.read_csv({file_type}_url).drop(["Lat","Long"],axis="columns")'
 
             print(expr_read)
             local_expr = dict([["memory", eval(expr_read)]])
             local_vars = dict(**sites, **local_expr)
 
-            # expr_write = "memory.to_csv('{0}.csv',index=None)".format(file)
-            expr_write = f'memory.to_csv("{file}.csv",index=None)'
+            # expr_write = "memory.to_csv('{0}.csv',index=None)".format(file_type)
+            expr_write = f'memory.to_csv("{file_type}.csv",index=None)'
             print(expr_write)
             eval(expr_write, local_vars)
         return None
 
     def _download_data2(self):
-        for kind in ["confirmed", "deaths", "recovered"]:
+        for kind in ["confirmed", "deaths", "recovered", "population"]:
 
             raw = (
                 pd.read_csv(
@@ -518,21 +533,26 @@ If no print then return confirmed,deaths"""
                 ["deaths_daily", [True, c]],
             ]
         )
-        for file in a.keys():
-            bool_val = a[file][0]
-            country = a[file][1]
+        for key in a.keys():
+            bool_val = a[key][0]
+            country = a[key][1]
             if bool_val:
                 eval(
                     "self.{0}.to_csv('{0}.csv',index={1},index_label='{2}')".format(
-                        file, *a[file]
+                        key, *a[key]
                     )
                 )
             else:
-                eval("self.{0}.to_csv('{0}.csv',index=False)".format(file))
+                eval("self.{0}.to_csv('{0}.csv',index=False)".format(key))
         return None
 
-    def _get_population_figures(self):
-        pop_data = (pop:=pd.read_csv(population_url))[pop.Year==2018].drop(['Country Code','Year'],axis=1)
+    def _get_population_figures(self,population_file=''):
+        from pathlib import Path
+        if not Path(population_file).exists():
+            pop_data = (pop:=pd.read_csv(population_url))[pop.Year==2018].drop(['Country Code','Year'],axis=1)
+        else:
+            pop_data = (pop:=pd.read_csv(population_file))[pop.Year==2018].drop(['Country Code','Year'],axis=1)
+
 
         #pop_data = pop[pop.Year==2018].drop(['Country Code','Year'],axis=1)
 
@@ -556,6 +576,7 @@ If no print then return confirmed,deaths"""
             ("Slovak Republic", "Slovakia"),
             ("United States", "US")])
 
+        pop.to_csv('Population.csv')
         return pop.rename(renaming_dict)
  
     def _per_capita(self, data):
@@ -923,8 +944,33 @@ def print_graphs():
 
     return None
 
+def download_population():
+    logger.debug('Entered download_population...')
+    sites = dict(
+          [
+                ["population", population_url],
+            ]
+        )
+    logger.debug(f'Checking urls: {population_url}')
+    for file_type in ["population"]:
+    # for file_type in population_url:
+        logger.debug(f'Checking {file_type}')
+        expr_read = f'pd.read_csv({file_type}_url)'
+
+        logger.debug(f'Making local_expr: {expr_read}')
+        logger.debug(expr_read)
+        local_expr = dict([["memory", eval(expr_read)]])
+        logger.debug(local_expr)
+        local_vars = dict(**sites, **local_expr)
+        logger.debug(local_vars)
+        expr_write = f'memory.to_csv("{file_type}.csv",index=None)'
+        logger.debug(expr_write)
+        eval(expr_write, local_vars)
+
+   
 
 def download_data():
+    logger.debug('Entered download_data...')
     sites = dict(
           [
                 ["confirmed", confirmed_url],
@@ -932,15 +978,18 @@ def download_data():
                 ["recovered", recovered_url],
             ]
         )
-    for file in ["confirmed", "deaths", "recovered"]:
-        expr_read = f'pd.read_csv({file}_url).drop(["Lat","Long"],axis="columns")'
+    logger.debug(f'Checking sites: {sites}')
+    for file_type in ["confirmed", "deaths", "recovered"]:
+        logger.debug(f'Checking {file_type}')
+        expr_read = f'pd.read_csv({file_type}_url).drop(["Lat","Long"],axis="columns")'
 
-        print(expr_read)
+        logger.debug(expr_read)
         local_expr = dict([["memory", eval(expr_read)]])
+        logger.debug(local_expr)
         local_vars = dict(**sites, **local_expr)
-
-        expr_write = f'memory.to_csv("{file}.csv",index=None)'
-        print(expr_write)
+        logger.debug(local_vars)
+        expr_write = f'memory.to_csv("{file_type}.csv",index=None)'
+        logger.debug(expr_write)
         eval(expr_write, local_vars)
 
 
