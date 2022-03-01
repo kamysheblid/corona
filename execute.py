@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import asyncio
 import matplotlib.pyplot as plt
 from argparse import ArgumentParser
 import datetime, corona, canada, logging, sys
@@ -16,6 +17,7 @@ parser.add_argument('-s',action='store_true',help='Skip downloading new data and
 parser.add_argument('-p',action='store_true',help='Force downloading population data even if it exists')
 parser.add_argument('-v',default=0,action='count',help='Verbose output, -vv for debug info')
 parser.add_argument('-d',default='data',help='Directory to store graphs')
+parser.add_argument('--profile',action='store_true',help='Retrieve profiling information and save to profile_stats.prof')
 
 args = parser.parse_args()
 
@@ -83,7 +85,7 @@ def print_important_regions():
     plt.savefig(f'{datadir}/imporant')
     plt.close('all')
 
-def deaths_per100k():
+async def deaths_per100k():
     logger.info('Creating percapita deaths plot...')
     d.plot_deaths_per_100k_countries(corona.important_regions, plot=False)
     plt.savefig(f'{datadir}/deaths_per100k')
@@ -97,7 +99,7 @@ def canada_plot():
     plt.close('all')
     return
 
-def canada_percapita_plot():
+async def canada_percapita_plot():
     logger.info('Creating canadian percapita plot...')
     provinces = [i for i in canada.per_capita.sort_values(canada.per_capita.columns[-1],ascending=False).index]
     ((b:=(a:=canada.per_capita)[a>0]
@@ -119,7 +121,7 @@ def print_canada():
     plt.savefig(f'{datadir}/canada_dailydeaths')
     plt.close('all')
 
-def daily_deaths(avg_days=14, logarithmic=False):
+async def daily_deaths(avg_days=14, logarithmic=False):
     # daily deaths are found by using a triangular rolling sum over avg_days and dividing by (avg_days-1)/2.
     # The actual covid figures are very chaotic, this makes them settle to a more visually appealing curve
     # but doesnt significantly change the data (in my opinion).
@@ -147,12 +149,47 @@ def daily_avg_by_week_deaths():
     plt.close('all')
     return
 
+def copy_file(orig,dest):
+    with orig.open('rb') as origFile:
+        with dest.open('b+w') as destFile:
+            destFile.writelines( origFile.readlines() )
+            return True
+    return False
+
+async def make_graphs():
+    asyncio.gather(
+            deaths_per100k(),
+            canada_percapita_plot(),
+            daily_deaths()
+            )
+    return
+
+def profiled_main():
+    import cProfile,pstats
+    with cProfile.Profile() as pr:
+        init_conditions()
+        asyncio.run(make_graphs())
+        for pic in Path('.').glob('data/*png'):
+            copy_file(pic,Path('~/.backup').expanduser().joinpath(pic.name))
+        logging.shutdown()
+
+    stats = pstats.Stats(pr)
+    stats.sort_stats(pstats.SortKey.TIME)
+    stats.dump_stats(filename='profile_stats.prof')
+    return
+
+def main():
+        init_conditions()
+        asyncio.run(make_graphs())
+        for pic in Path('.').glob('data/*png'):
+            copy_file(pic,Path('~/.backup').expanduser().joinpath(pic.name))
+        logging.shutdown()
+        return
+
+
 if __name__ == '__main__':
-    init_conditions()
-    deaths_per100k()
-    canada_percapita_plot()
-    daily_deaths()
-    import subprocess
-    subprocess.run('cp -v ~/corona/data/*png ~/.backup',shell=True)
-    logging.shutdown()
-    None
+    if args.profile:
+        profiled_main()
+    else:
+        main()
+

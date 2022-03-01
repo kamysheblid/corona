@@ -5,9 +5,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 
-print(__name__)
+#print(__name__)
 logger = logging.getLogger(__name__)
-print(logging.getLevelName(logger))
+#print(logging.getLevelName(logger))
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 warnings.simplefilter(action="ignore", category=DeprecationWarning)
