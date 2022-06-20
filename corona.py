@@ -967,8 +967,7 @@ def download_population():
         logger.debug(expr_write)
         eval(expr_write, local_vars)
 
-   
-
+import io
 def download_data():
     logger.debug('Entered download_data...')
     sites = dict(
@@ -981,17 +980,32 @@ def download_data():
     logger.debug(f'Checking sites: {sites}')
     for file_type in ["confirmed", "deaths", "recovered"]:
         logger.debug(f'Checking {file_type}')
-        expr_read = f'pd.read_csv({file_type}_url).drop(["Lat","Long"],axis="columns")'
+        #expr_read = f'pd.read_csv({file_type}_url).drop(["Lat","Long"],axis="columns")'
+        #logger.debug(expr_read)
+        #local_expr = dict([["memory", eval(expr_read)]])
 
-        logger.debug(expr_read)
-        local_expr = dict([["memory", eval(expr_read)]])
+        s = io.StringIO( download_text( sites[file_type] ))
+        csv = pd.read_csv( s ).drop(["Lat","Long"],axis="columns")
+        local_expr = dict([["memory", csv ]])
+
         logger.debug(local_expr)
         local_vars = dict(**sites, **local_expr)
         logger.debug(local_vars)
         expr_write = f'memory.to_csv("{file_type}.csv",index=None)'
         logger.debug(expr_write)
         eval(expr_write, local_vars)
+    return
 
+
+import os, requests
+def download_text(link):
+    # Check to see if any proxies environment variables have been set
+    # Check for NO_PROXY, HTTP_PROXY, SOCKS5_PROXY, etc
+    # If there is then use requests to access web through a proxy
+    PROXIES = [var for var in os.environ if '_proxy' in var.lower()]
+    proxies = {k:v for k,v in os.environ.items() if k in PROXIES}
+    return requests.get(link, proxies=proxies).text
+    
 
 def main():
     return None
