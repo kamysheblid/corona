@@ -13,21 +13,33 @@ warnings.simplefilter(action="ignore", category=FutureWarning)
 warnings.simplefilter(action="ignore", category=DeprecationWarning)
 
 confirmed_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
-#"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
-
 recovered_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv"
-#"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv"
-
 deaths_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv"
-
-#"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv"
-
-
 
 population_url = 'https://raw.githubusercontent.com/datasets/population/master/data/population.csv'
 
 # worldbank took down their api sometime in Jun
 #population_url = ("http://api.worldbank.org/countries/all/indicators/SP.POP.TOTL?format=csv")
+
+url = 'https://covid19.who.int/WHO-COVID-19-global-data.csv'
+
+important_regions_UNDATA = [
+    "Iran (Islamic Republic of)",
+    "United States of America",
+    "Canada",
+    "China",
+    "Japan",
+    "Republic of Korea",
+    "Italy",
+    "Spain",
+    "Russian Federation",
+    "The United Kingdom",
+    "Brazil",
+    "Germany",
+    "Viet nam",
+    "India",
+]
+
 
 important_regions = [
     "Iran",
