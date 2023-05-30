@@ -2,8 +2,12 @@ import os, logging
 import pandas as pd
 import warnings
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
+
+mpl.use('Agg')
+
 
 #print(__name__)
 logger = logging.getLogger(__name__)
